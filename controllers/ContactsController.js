@@ -3,7 +3,6 @@ const fs = require("fs").promises;
 const path = require("path");
 
 const constants = require("../constants");
-const { writeFile } = require("fs");
 
 const pathToJsonFile = path.join("db", constants.CONTACTS_FILE);
 
@@ -28,14 +27,7 @@ class ContactsController {
     const id = parsedContacts.length + 1;
     const newContact = { id, name, email, phone };
     parsedContacts.push(newContact);
-    await writeFile(
-      pathToJsonFile,
-      JSON.stringify(parsedContacts),
-      "utf-8",
-      (err) => {
-        if (err) console.error(err);
-      }
-    );
+    await fs.writeFile(pathToJsonFile, JSON.stringify(parsedContacts), "utf-8");
 
     return newContact;
   }
@@ -64,14 +56,7 @@ class ContactsController {
       phone: newPhone,
     };
 
-    await writeFile(
-      pathToJsonFile,
-      JSON.stringify(parsedContacts),
-      "utf-8",
-      (err) => {
-        if (err) console.error(err);
-      }
-    );
+    await fs.writeFile(pathToJsonFile, JSON.stringify(parsedContacts), "utf-8");
 
     return parsedContacts[contactIndex];
   }
@@ -88,14 +73,7 @@ class ContactsController {
 
     parsedContacts.splice(contactIndex, 1);
 
-    await writeFile(
-      pathToJsonFile,
-      JSON.stringify(parsedContacts),
-      "utf-8",
-      (err) => {
-        if (err) console.error(err);
-      }
-    );
+    await fs.writeFile(pathToJsonFile, JSON.stringify(parsedContacts), "utf-8");
 
     return parsedContacts;
   }
