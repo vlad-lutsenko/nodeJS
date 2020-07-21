@@ -1,28 +1,31 @@
-const argv = require("yargs").argv;
-const contacts = require("./contacts");
-// console.log(argv);
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
+const constants = require("./constants");
+const router = require("./router/contactsRouter");
 
-function invokeAction({ action, id, name, email, phone }) {
-  switch (action) {
-    case "list":
-      contacts.listContacts();
-      break;
+const app = express();
 
-    case "get":
-      contacts.getContactById(id);
-      break;
+app.use(express.json());
 
-    case "add":
-      contacts.addContact(name, email, phone);
-      break;
+app.use(cors());
 
-    case "remove":
-      contacts.removeContact(id);
-      break;
+app.use(morgan("dev"));
 
-    default:
-      console.warn("\x1B[31m Unknown action type!");
-  }
-}
+app.use("/api/contacts", router);
 
-invokeAction(argv);
+app.use((err, req, res, next) => {
+  if (!err) return next();
+
+  console.error(err);
+
+  res.status(500).send(err.message);
+});
+
+app.use((req, res) => {
+  res.status(404).send("page not found");
+});
+
+app.listen(constants.PORT, (e) =>
+  e ? console.error(e) : console.log(`server started at ${constants.PORT}`)
+);
