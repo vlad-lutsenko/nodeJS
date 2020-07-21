@@ -1,7 +1,7 @@
 {
-  "name": "nodejs",
+  "name": "01-node-basics",
   "version": "1.0.0",
-  "description": "hw2",
+  "description": "homework_1",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,10 +18,10 @@
     "url": "https://github.com/vlad-lutsenko/nodeJS/issues"
   },
   "homepage": "https://github.com/vlad-lutsenko/nodeJS#readme",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "morgan": "^1.10.0",
+  "devDependencies": {
     "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "yargs": "^15.4.1"
   }
 }

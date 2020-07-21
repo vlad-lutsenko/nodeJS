@@ -1,11 +1,28 @@
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
+const argv = require("yargs").argv;
+const contacts = require("./contacts");
+// console.log(argv);
 
-const app = express();
+function invokeAction({ action, id, name, email, phone }) {
+  switch (action) {
+    case "list":
+      contacts.listContacts();
+      break;
 
-app.use(express.json());
+    case "get":
+      contacts.getContactById(id);
+      break;
 
-app.use(cors());
+    case "add":
+      contacts.addContact(name, email, phone);
+      break;
 
-app.use(morgan("short"));
+    case "remove":
+      contacts.removeContact(id);
+      break;
+
+    default:
+      console.warn("\x1B[31m Unknown action type!");
+  }
+}
+
+invokeAction(argv);
