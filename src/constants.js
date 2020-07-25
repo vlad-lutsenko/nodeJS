@@ -1,5 +1,3 @@
-const { env } = require("yargs");
-
 require("dotenv").config();
 
 module.exports = {
