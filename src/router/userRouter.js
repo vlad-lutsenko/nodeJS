@@ -93,7 +93,7 @@ router.patch("/users", async (req, res) => {
 
   if (!subscriptions.includes(subscription)) {
     return res.status(400).json({
-      message: "subscription must be one of ['free', 'pro', 'premium']",
+      message: `subscription must be one of ${subscriptions}`,
     });
   }
 
