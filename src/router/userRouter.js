@@ -2,6 +2,7 @@ const express = require("express");
 
 const UserModel = require("../models/UserModel");
 const authorization = require("../middlewares/authorization");
+const adminKeyForUserSubscriptionChange = require("../constants").ADMIN_KEY;
 
 const router = express.Router();
 
@@ -80,6 +81,25 @@ router.get("/users/current", authorization, (req, res) => {
   const user = req.user;
   const { email, subscription } = user;
   return res.status(200).json({ email, subscription });
+});
+
+router.patch("/users", async (req, res) => {
+  const { subscription, userEmail, adminKey } = req.body;
+
+  if (adminKey !== adminKeyForUserSubscriptionChange) {
+    return res.status(403).json({ message: "access denied" });
+  }
+  const subscriptions = ["free", "pro", "premium"];
+
+  if (!subscriptions.includes(subscription)) {
+    return res.status(400).json({
+      message: "subscription must be one of ['free', 'pro', 'premium']",
+    });
+  }
+
+  await UserModel.findOneAndUpdate({ email: userEmail }, { subscription });
+
+  res.status(200).json({ message: `user's ${userEmail} subscription updated` });
 });
 
 module.exports = router;

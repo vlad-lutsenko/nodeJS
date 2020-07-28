@@ -1,9 +1,19 @@
 const ContactModel = require("../models/ContactModel");
 
 class ContactsController {
-  async listContacts() {
-    const contacts = await ContactModel.find();
+  async listContacts(req) {
+    const { page, limit, sub } = req.query;
 
+    if (page || limit || sub) {
+      const query = sub ? { subscription: sub } : {};
+      const options = page && limit ? { page, limit } : {};
+
+      const contacts = await ContactModel.paginate(query, options);
+
+      return contacts;
+    }
+
+    const contacts = await ContactModel.find();
     return contacts;
   }
 
