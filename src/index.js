@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const constants = require("./constants");
-const router = require("./router/contactsRouter");
+const contactsRouter = require("./router/contactsRouter");
+const userRouter = require("./router/userRouter");
 const database = require("./database");
 
 const app = express();
@@ -17,7 +18,9 @@ async function main() {
 
   app.use(morgan("dev"));
 
-  app.use("/api/contacts", router);
+  app.use("/api/contacts", contactsRouter);
+
+  app.use("/api", userRouter);
 
   app.use((req, res) => {
     res.status(404).send("page not found");
