@@ -5,8 +5,8 @@ class ContactsController {
     const { page, limit, sub } = req.query;
 
     if (page || limit || sub) {
-      const query = sub ? { subscription: sub } : {};
-      const options = page && limit ? { page, limit } : {};
+      const query = { ...(sub && { subscription: sub }) };
+      const options = { ...(page && limit && { page, limit }) };
 
       const contacts = await ContactModel.paginate(query, options);
 
