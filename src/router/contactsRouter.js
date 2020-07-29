@@ -5,10 +5,11 @@ const contactsController = require("../controllers/ContactsController");
 
 router.get("/", async (req, res) => {
   try {
-    const contacts = await contactsController.listContacts();
-    res.status(200).send(contacts);
+    const contacts = await contactsController.listContacts(req);
+    res.status(200).json(contacts);
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: error.message });
   }
 });
 
