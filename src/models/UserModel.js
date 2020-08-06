@@ -15,6 +15,7 @@ const UserSchema = mongoose.Schema({
     default: "free",
   },
   token: String,
+  avatarURL: String,
 });
 
 UserSchema.pre("save", async function (next) {

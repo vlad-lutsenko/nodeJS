@@ -1,8 +1,15 @@
 const express = require("express");
+const path = require("path");
+const imagemin = require("imagemin");
+const imageminJpegtran = require("imagemin-jpegtran");
+const imageminPngquant = require("imagemin-pngquant");
 
 const UserModel = require("../models/UserModel");
 const authorization = require("../middlewares/authorization");
 const adminKeyForUserSubscriptionChange = require("../constants").ADMIN_KEY;
+
+const minifyImage = require("../helpers/minifyImage");
+const avatarCreator = require("../helpers/avatarCreator");
 
 const router = express.Router();
 
@@ -28,6 +35,13 @@ router.post("/auth/register", async (req, res) => {
     });
 
     const { subscription } = user;
+
+    const avatar = await avatarCreator(email);
+
+    const pathToFile = path.join(process.cwd(), "temp", `${email}-avatar.png`);
+    const destination = path.join(process.cwd(), "public", "images");
+
+    const minImage = await minifyImage(pathToFile, destination); // повертає пустий масив
 
     res.status(201).json({ user: { email, subscription } });
   } catch (error) {
