@@ -1,11 +1,12 @@
 const imagemin = require("imagemin");
 const imageminJpegtran = require("imagemin-jpegtran");
 const imageminPngquant = require("imagemin-pngquant");
-const path = require("path");
+const fs = require("fs").promises;
 
 module.exports = async (pathToFile, destination) => {
   const minImage = await imagemin([pathToFile], {
-    destination: destination,
+    destination,
+    glob: false,
     plugins: [
       imageminJpegtran(),
       imageminPngquant({
@@ -14,11 +15,7 @@ module.exports = async (pathToFile, destination) => {
     ],
   });
 
-  console.log("pathToFile ->", pathToFile); //  pathToFile -> E:\goit\homeworks\node\hw5\nodeJS\temp\karabas@mail.com-avatar.png
-  console.log("destination ->", destination); // destination -> E:\goit\homeworks\node\hw5\nodeJS\public\images
-
-  console.log("minification is done"); //   minification is done
-  console.log("minImage ->", minImage); // minImage -> []
+  fs.unlink(pathToFile);
 
   return minImage;
 };
