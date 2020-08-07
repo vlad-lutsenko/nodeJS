@@ -1,8 +1,14 @@
 const express = require("express");
+const path = require("path");
 
 const UserModel = require("../models/UserModel");
 const authorization = require("../middlewares/authorization");
 const adminKeyForUserSubscriptionChange = require("../constants").ADMIN_KEY;
+
+const minifyImage = require("../helpers/minifyImage");
+const avatarCreator = require("../helpers/avatarCreator");
+const { PORT } = require("../constants");
+const upload = require("../helpers/multerUpload");
 
 const router = express.Router();
 
@@ -22,9 +28,19 @@ router.post("/auth/register", async (req, res) => {
       return res.status(409).json({ message: "Email in use" });
     }
 
+    await avatarCreator(email);
+
+    const pathToFile = path.join(process.cwd(), "temp", `${email}-avatar.png`);
+    const destination = path.join(process.cwd(), "public", "images");
+
+    await minifyImage(pathToFile, destination);
+
+    const avatarURL = `http://localhost:${PORT}/images/${email}-avatar.png`;
+
     const user = await UserModel.create({
       email,
       password,
+      avatarURL,
     });
 
     const { subscription } = user;
@@ -82,6 +98,24 @@ router.get("/users/current", authorization, (req, res) => {
   const { email, subscription } = user;
   return res.status(200).json({ email, subscription });
 });
+
+router.patch(
+  "/users/avatars",
+  authorization,
+  upload.single("image"),
+  async (req, res) => {
+    const { user, file } = req;
+
+    const destination = path.join(process.cwd(), "public", "images");
+    await minifyImage(file.path, destination);
+
+    avatarURL = `http://localhost:${PORT}/images/${file.filename}`;
+
+    await UserModel.findByIdAndUpdate(user._id, { avatarURL });
+
+    res.status(200).json({ avatarURL });
+  }
+);
 
 router.patch("/users", async (req, res) => {
   const { subscription, userEmail, adminKey } = req.body;

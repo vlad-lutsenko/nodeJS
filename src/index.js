@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const morgan = require("morgan");
 const constants = require("./constants");
@@ -12,6 +13,11 @@ async function main() {
   //
   await database.start();
 
+  app.use(
+    "/images",
+    express.static(path.join(process.cwd(), "public", "images"))
+  );
+
   app.use(express.json());
 
   app.use(cors());
@@ -23,7 +29,7 @@ async function main() {
   app.use("/api", userRouter);
 
   app.use((req, res) => {
-    res.status(404).send("page not found");
+    res.status(404).send("page not found...");
   });
 
   app.listen(constants.PORT, (e) =>
