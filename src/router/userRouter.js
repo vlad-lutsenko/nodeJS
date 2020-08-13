@@ -93,6 +93,8 @@ router.post("/users/logout", authorization, async (req, res) => {
   res.status(204).send();
 });
 
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmMjAwMGYzZDczYjg4M2M3YzQyM2RkMyIsImlhdCI6MTU5NzMxNTIzOSwiZXhwIjoxNTk3MzE4ODM5fQ.DTumVm_Nq5fx-j_e3pXulxlLacTmq1t0Kt0z8z0VHxg
+
 router.get("/users/current", authorization, (req, res) => {
   const user = req.user;
   const { email, subscription } = user;

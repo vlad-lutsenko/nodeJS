@@ -13,13 +13,13 @@ async function authorization(req, res, next) {
     try {
       userId = await jwt.verify(token, tokenKey).id;
     } catch (error) {
-      return res.status(401).json({ message: "Not authorized" });
+      return res.status(401).send({ message: "Not authorized" });
     }
 
     const user = await UserModel.findById(userId);
 
     if (!user) {
-      return res.status(401).json({ message: "Not authorized" });
+      return res.status(401).send({ message: "Not authorized" });
     }
 
     req.user = user;

@@ -5,6 +5,7 @@ const connectUrl = constants.CONNECTION_URL;
 const dbName = "db-contacts";
 
 const urlForMongoose = `${connectUrl}/${dbName}`;
+console.log(urlForMongoose);
 
 class Database {
   constructor() {
