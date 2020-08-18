@@ -1,13 +1,18 @@
 const express = require("express");
 const path = require("path");
+const uuid = require("uuid").v4;
+const sgMail = require("@sendgrid/mail");
 
 const UserModel = require("../models/UserModel");
 const authorization = require("../middlewares/authorization");
 const adminKeyForUserSubscriptionChange = require("../constants").ADMIN_KEY;
-
 const minifyImage = require("../helpers/minifyImage");
 const avatarCreator = require("../helpers/avatarCreator");
-const { PORT } = require("../constants");
+const {
+  PORT,
+  SENDGRID_API_KEY,
+  SENDGRID_EMAIL_SENDER,
+} = require("../constants");
 const upload = require("../helpers/multerUpload");
 
 const router = express.Router();
@@ -37,11 +42,24 @@ router.post("/auth/register", async (req, res) => {
 
     const avatarURL = `http://localhost:${PORT}/images/${email}-avatar.png`;
 
+    const verificationToken = uuid();
+
     const user = await UserModel.create({
       email,
       password,
       avatarURL,
+      verificationToken,
     });
+
+    sgMail.setApiKey(SENDGRID_API_KEY);
+
+    const msg = {
+      to: email,
+      from: SENDGRID_EMAIL_SENDER,
+      subject: "email verification for myApp",
+      html: `<a href="http://localhost:${PORT}/api/auth/verify/${verificationToken}">email verification</a>`,
+    };
+    sgMail.send(msg);
 
     const { subscription } = user;
 
@@ -134,6 +152,19 @@ router.patch("/users", async (req, res) => {
   await UserModel.findOneAndUpdate({ email: userEmail }, { subscription });
 
   res.status(200).json({ message: `user's ${userEmail} subscription updated` });
+});
+
+router.get("/auth/verify/:verificationToken", async (req, res, next) => {
+  const { verificationToken } = req.params;
+  const user = await UserModel.findOne({ verificationToken });
+
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
+
+  await UserModel.findByIdAndUpdate(user._id, { verificationToken: null });
+
+  res.status(200).send("email successfully verified");
 });
 
 module.exports = router;
